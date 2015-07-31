@@ -15,44 +15,126 @@
     <script src="http://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
     <script src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-
+    
+    <!--[if lt IE 9]><script type="text/javascript" src="excanvas.js"></script><![endif]-->
+ 
+    <script src="./tagcanvas.min.js" type="text/javascript"></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-<body>
-    <div class="container theme-showcase" role="main">
-    <?php
+<body screen_capture_injected="true">
+<script type="text/javascript">
+  var o = {
+      textHeight: 25, 
+      shape: "sphere"
+    };
+  window.onload = function() {
+    try {
+      
+      TagCanvas.Start('myCanvas','extags0',o);
+    } catch(e) {
+      // something went wrong, hide the canvas container
+      document.getElementById('myCanvasContainer').style.display = 'none';
+    }
+  };
+  
+  function cloudreload(id){
+      
+     try {
+      TagCanvas.Start('myCanvas',id,o);
+    } catch(e) {
+      // something went wrong, hide the canvas container
+      document.getElementById('myCanvasContainer').style.display = 'none';
+    }
+  }
+ </script>
+ 
+ <?php
+$jstr=file_get_contents('./json.txt');
+$news = json_decode($jstr, true);
+$wordsstyle = array('label-primary' , 'label-success', 'label-info',  'label-warning', 'label-danger');
+$progstyle = array('progress-bar-primary' , 'progress-bar-success', 'progress-bar-info',  'progress-bar-warning', 'progress-bar-danger');
+$total = 0;
+$max = 0;
+foreach($news as $item)
+{
+    $total += $item[1]['c'];
+}
 
-    $jstr=file_get_contents('./json.txt');
-    $news = json_decode($jstr, true);
-    $wordsstyle = array('label-primary', 'label-primary' , 'label-success', 'label-info',  'label-warning', 'label-danger');
-    $max = 0;
-    foreach($news as $item)
-    {
-        if ($max===0) $max=$item[1]['c'];
-
-        $labelstyle = $wordsstyle[array_rand($wordsstyle)];
-        echo "<div style='padding: 8px;0px;8px;0px;'>";
-        echo "<span class=\"label {$labelstyle}\">{$item[0]}</span><span class=\"badge\">{$item[1]['c']}</span>";
-        echo "</div>";
-        $xxpercent = intval(floatval($item[1]['c'])*100/$max);
-$pro=<<<EOF
-        <div class="progress">
-            <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="{$xxpercent}" aria-valuemin="0" aria-valuemax="100" style="width: {$xxpercent}%">
-                <span class="sr-only">60% Complete (warning)</span>
-            </div>
-        </div>
-EOF;
-        echo $pro;
-        echo "<div class=\"well\">";
-
+$i=0;
+foreach($news as $item)
+{
+?>
+     <div style="display: none" id="extags<?php echo $i;?>">
+          <?php
             foreach($item[1]['l'] as $ne)
             {
-                echo "<button type=\"button\" class=\"btn btn-xs btn-default\"><a href='{$ne['u']}'>{$ne['t']}</a></code></button><br>";
+                echo "<a href='{$ne['u']}'>{$ne['t']}</a>";
             }
-            echo "</div>";
-    }
+          ?>
+     </div>
+<?php
+     $i++;
+}
+?>
+    
+    <div class="container-fluid">
+
+    
+        <div class="row">
+            <div class="col-md-9 main">
+                <div id="myCanvasContainer">
+                    <canvas width="800px" height="800px" id="myCanvas" style="width: 100%">
+                    <p>Example canvas</p>
+                    </canvas>
+                </div>
+            </div>
+            <div class="col-md-3 sidebar ">
+                <table width="100%">
+                <?php
+                $i=0;
+                foreach($news as $item)
+                {
+                    if($max === 0)
+                    {
+                        $max = $item[1]['c'];
+                    }
+
+                    $labelstyle = $wordsstyle[array_rand($wordsstyle)];
+                    $pstyle = $progstyle[array_rand($progstyle)];
+                    $xxpercent = intval(floatval($item[1]['c'])*100/$max);
+                    ?>
+                    
+                        <tr>
+                            <td align="right">
+                                <span class="badge"><?php echo $item[1]['c'];?></span>
+                                <span onclick="cloudreload('extags<?php echo $i;?>');" class="label <?php echo $labelstyle;?>"><?php echo $item[0];?></span>
+                            </td>
+                            <td align="left">
+                                <div  style="width:200px;height:2px;margin-bottom: 0px;margin-left:6px;overflow: hidden;">
+                                    <div class="progress-bar <?php echo $pstyle;?>" role="progressbar" aria-valuenow="<?php echo $xxpercent;?>" aria-valuemin="0" aria-valuemax="100" style="width: <?php echo $xxpercent;?>%">
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td height="5px"></td>
+                            <td></td>
+                        </tr>
+                   
+                    
+             
+                    <?php
+
+                    $i++;
+                }
 
 
-    ?>
+                ?>
+                 </table>
+            </div>
+        </div>
+        
 
     </div>
 </body>
