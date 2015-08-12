@@ -3,13 +3,26 @@
 import urllib2
 import re
 import string
-import sys
 import jieba
 import json
-
+import io
+import urlparse
+import time
+import os
+import sys
 
 reload(sys)
-sys.setdefaultencoding( "utf-8" )
+sys.setdefaultencoding('utf-8')
+
+
+nowtime = str(int(time.time()))
+def savafile(html,url):
+    urlinfo=urlparse.urlparse(url)
+    filename=nowtime+'_'+urlinfo.netloc+'.html'
+    with io.open('./data/'+filename, 'wb') as file:
+        file.write(html)
+        file.close()
+
 
 def gethtmltxt(url,charset):
 
@@ -27,11 +40,13 @@ def gethtmltxt(url,charset):
         gz = gzip.GzipFile(fileobj=data)
         html = gz.read()
         gz.close()
+
     #read html code
     if charset is None and website.info().getparam('charset') is not None:
         charset  = string.upper(website.info().getparam('charset'))
     unicodehtml = html.decode(charset,'ignore')
     utf8html = unicodehtml.encode('UTF-8')
+    savafile(unicodehtml,url)
     return utf8html
     
 
