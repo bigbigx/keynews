@@ -14,6 +14,8 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+jieba.load_userdict('./word/netpopulor.txt')
+jieba.load_userdict('./word/computer.txt')
 
 nowtime = str(int(time.time()))
 def savafile(html,url):
