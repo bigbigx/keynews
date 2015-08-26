@@ -21,6 +21,23 @@
     <script src="./tagcanvas.min.js" type="text/javascript"></script>
     
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!--此处添加-->
+    <style type="text/css">
+    .container-fluid,.main{
+        overflow:hidden;
+    }
+    .sidebar{
+        overflow-y:scroll;
+        overflow-x:hidden;
+        height:60%;
+    }
+    .bottom-canvas{
+        background:#dfdfdf;
+        border-top:solid 2px #444;
+        clear:both;
+    }
+    </style>
 </head>
 <body screen_capture_injected="true">
 <script type="text/javascript">
@@ -32,6 +49,20 @@
     try {
       
       TagCanvas.Start('myCanvas','extags0',o);
+    } catch(e) {
+      // something went wrong, hide the canvas container
+      document.getElementById('myCanvasContainer').style.display = 'none';
+    }
+    
+    try {
+
+      //<!--此处添加-->
+      var h = document.documentElement.clientHeight;
+      $(".container-fluid").height(h);
+      $(".container-fluid .main").height(h*0.9);
+      $(".container-fluid .sidebar").height(h*0.9);
+      $('.container-fluid .bottom-canvas').height(h*0.1-2);
+  
     } catch(e) {
       // something went wrong, hide the canvas container
       document.getElementById('myCanvasContainer').style.display = 'none';
@@ -133,6 +164,9 @@ foreach($news as $item)
                 ?>
                  </table>
             </div>
+        </div>
+        <!--此处添加-->
+        <div class="bottom-canvas"> 
         </div>
         
 
